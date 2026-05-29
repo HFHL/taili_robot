@@ -1,0 +1,105 @@
+{
+  "urdf": "urdf/taili_quad/urdf/taili_quad.urdf",
+  "package_root": "/Users/Admin/project/genesis-world/taili/urdf/taili_quad",
+  "timestamp": "2026-05-29T07:53:11.009491+00:00",
+  "summary": {
+    "total": 15,
+    "passed": 15,
+    "warned": 0,
+    "failed": 0
+  },
+  "checks": [
+    {
+      "name": "xml_parse",
+      "status": "PASS",
+      "message": "XML 解析成功",
+      "details": {}
+    },
+    {
+      "name": "robot_element",
+      "status": "PASS",
+      "message": "根元素 <robot name=\"外壳装配+骨架0414.SLDASM\">",
+      "details": {}
+    },
+    {
+      "name": "joint_references",
+      "status": "PASS",
+      "message": "所有 17 个 joint 引用合法",
+      "details": {}
+    },
+    {
+      "name": "tree_topology",
+      "status": "PASS",
+      "message": "树形拓扑合法，根节点 'base_link'，共 18 个 link",
+      "details": {}
+    },
+    {
+      "name": "single_child",
+      "status": "PASS",
+      "message": "每个 link 最多被一个 joint 作为 child",
+      "details": {}
+    },
+    {
+      "name": "inertial",
+      "status": "PASS",
+      "message": "所有 18 个 link 均有合法 inertial",
+      "details": {}
+    },
+    {
+      "name": "inertia_positive_definite",
+      "status": "PASS",
+      "message": "所有惯性矩阵均正定",
+      "details": {}
+    },
+    {
+      "name": "revolute_limits",
+      "status": "PASS",
+      "message": "所有 12 个 revolute joint 限位合法",
+      "details": {}
+    },
+    {
+      "name": "revolute_axis",
+      "status": "PASS",
+      "message": "所有 revolute joint 轴向量合法",
+      "details": {}
+    },
+    {
+      "name": "base_link",
+      "status": "PASS",
+      "message": "存在 base_link",
+      "details": {}
+    },
+    {
+      "name": "quadruped_joints",
+      "status": "PASS",
+      "message": "四条腿 12 个 actuated joint 完整且均为 revolute",
+      "details": {}
+    },
+    {
+      "name": "foot_links",
+      "status": "PASS",
+      "message": "四个 foot link 完整",
+      "details": {}
+    },
+    {
+      "name": "mesh_files",
+      "status": "PASS",
+      "message": "所有 17 个 mesh 文件路径有效",
+      "details": {}
+    },
+    {
+      "name": "symmetry",
+      "status": "PASS",
+      "message": "对称腿质量偏差均在 5% 以内",
+      "details": {}
+    },
+    {
+      "name": "mass_inertia_sanity",
+      "status": "PASS",
+      "message": "质量与惯性对角元在合理范围内（连杆总质量约 38.979 kg）",
+      "details": {
+        "total_mass_kg": 38.9786
+      }
+    }
+  ]
+}

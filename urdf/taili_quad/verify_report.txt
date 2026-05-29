@@ -1,0 +1,55 @@
+URDF 合规性验证报告
+==================================================
+文件: urdf/taili_quad/urdf/taili_quad.urdf
+包路径: /Users/Admin/project/genesis-world/taili/urdf/taili_quad
+时间: 2026-05-29T07:53:11.009131+00:00
+
+总计: 15  通过: 15  警告: 0  失败: 0
+==================================================
+
+  [PASS]  xml_parse
+         XML 解析成功
+
+  [PASS]  robot_element
+         根元素 <robot name="外壳装配+骨架0414.SLDASM">
+
+  [PASS]  joint_references
+         所有 17 个 joint 引用合法
+
+  [PASS]  tree_topology
+         树形拓扑合法，根节点 'base_link'，共 18 个 link
+
+  [PASS]  single_child
+         每个 link 最多被一个 joint 作为 child
+
+  [PASS]  inertial
+         所有 18 个 link 均有合法 inertial
+
+  [PASS]  inertia_positive_definite
+         所有惯性矩阵均正定
+
+  [PASS]  revolute_limits
+         所有 12 个 revolute joint 限位合法
+
+  [PASS]  revolute_axis
+         所有 revolute joint 轴向量合法
+
+  [PASS]  base_link
+         存在 base_link
+
+  [PASS]  quadruped_joints
+         四条腿 12 个 actuated joint 完整且均为 revolute
+
+  [PASS]  foot_links
+         四个 foot link 完整
+
+  [PASS]  mesh_files
+         所有 17 个 mesh 文件路径有效
+
+  [PASS]  symmetry
+         对称腿质量偏差均在 5% 以内
+
+  [PASS]  mass_inertia_sanity
+         质量与惯性对角元在合理范围内（连杆总质量约 38.979 kg）
+
+结论: PASS — URDF 完全合规，可用于仿真训练
