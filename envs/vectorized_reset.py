@@ -14,7 +14,6 @@ from typing import TYPE_CHECKING
 
 import torch
 
-from envs.commands import resample_commands
 
 if TYPE_CHECKING:
     from envs.genesis_env import GenesisEnv
@@ -123,9 +122,9 @@ def reset_envs(env: GenesisEnv, env_ids: torch.Tensor | None) -> int:
     )
 
     if env_mask is None:
-        resample_commands(env, None)
+        env.resample_commands(None)
     else:
-        resample_commands(env, env_mask_to_idx(env_mask))
+        env.resample_commands(env_mask_to_idx(env_mask))
 
     _zero_episode_buffers(env, env_mask)
     refresh_state_buffers(env, env_mask)
@@ -133,10 +132,12 @@ def reset_envs(env: GenesisEnv, env_ids: torch.Tensor | None) -> int:
     env._reset_episode_reward_sums(env_mask)
 
     if n_reset > 0:
-        env.extras["episode"] = {
-            f"rew_{name}": (buf[env_mask].mean() if env_mask is not None else buf.mean())
-            for name, buf in env._episode_reward_sums.items()
-        }
+        sums = getattr(env, "_episode_reward_sums", None)
+        if sums:
+            env.extras["episode"] = {
+                f"rew_{name}": (buf[env_mask].mean() if env_mask is not None else buf.mean())
+                for name, buf in sums.items()
+            }
         env.extras["n_reset_envs"] = n_reset
 
     return n_reset

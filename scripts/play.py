@@ -26,6 +26,7 @@ import torch
 
 from configs.run_manifest import find_checkpoint, resolve_run_dir
 from envs.genesis_env import GenesisEnv
+from train import get_version
 
 
 def main() -> int:
@@ -59,6 +60,7 @@ def main() -> int:
         saved = pickle.load(f)
     env_cfg = saved["env_cfg"]
     train_cfg = saved["train_cfg"]
+    train_version = saved.get("train_version") or getattr(env_cfg, "train_version", "legacy")
 
     env_cfg.sim.num_envs = args.num_envs
     env_cfg.show_viewer = not args.no_viewer
@@ -67,7 +69,11 @@ def main() -> int:
     backend = gs.cpu if args.cpu else gs.gpu
     gs.init(backend=backend, seed=seed, logging_level="warning", performance_mode=True)
 
-    env = GenesisEnv(cfg=env_cfg)
+    if train_version == "legacy":
+        env_cls = GenesisEnv
+    else:
+        env_cls = get_version(train_version)["env_cls"]
+    env = env_cls(cfg=env_cfg)
     runner = OnPolicyRunner(env, train_cfg, str(run_dir), device=gs.device)
     runner.load(str(ckpt_path))
     policy = runner.get_inference_policy(device=gs.device)

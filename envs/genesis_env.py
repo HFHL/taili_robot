@@ -13,7 +13,7 @@ from genesis.utils.geom import inv_quat, transform_by_quat
 from configs.env_cfg import EnvCfg
 from configs.paths import resolve_asset_path
 from envs.base_env import BaseEnv
-from envs.commands import resample_commands
+from envs import commands as commands_mod
 from envs.seeding import make_env_generator, set_global_seed
 from envs.vectorized_reset import normalize_env_ids, refresh_state_buffers, reset_envs
 from envs.actions import (
@@ -339,12 +339,16 @@ class GenesisEnv(BaseEnv, RewardMixin):
         """拼接观测向量 -> obs_buf [num_envs, num_obs]。"""
         write_observations(self, self.obs_buf)
 
+    def resample_commands(self, envs_idx: torch.Tensor | None) -> None:
+        """重采样速度指令；子类可覆盖以实现版本化指令逻辑。"""
+        commands_mod.resample_commands(self, envs_idx)
+
     def _maybe_resample_commands(self) -> None:
         """按间隔重采样速度指令。"""
         interval = max(1, int(self.cfg.command.resampling_time_s / self.dt))
         envs_idx = (self.episode_length_buf % interval == 0).nonzero(as_tuple=False).flatten()
         if envs_idx.numel() > 0:
-            resample_commands(self, envs_idx)
+            self.resample_commands(envs_idx)
 
     def _check_termination(self) -> None:
         """检查 episode 终止条件，结果写入 reset_buf 与 extras['time_outs']。"""

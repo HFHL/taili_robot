@@ -55,6 +55,8 @@ taili/
 │       ├── urdf/taili_quad.urdf
 │       ├── verify_report.{txt,json}
 │       └── .taili_generated/   # Isaac Lab 生成物（参考用）
+├── train/                  # RL 策略按版本分目录（见 train/README.md）
+│   └── version1/           # 第一版：平地盲跑 + 站立（desing.md）
 ├── pipeline.md             # 训练流程 SOP
 └── README.md
 ```
@@ -85,8 +87,8 @@ taili/
    可选：`pip install rsl-rl-lib>=5.0.0`。
 
 2. **填写配置**  
-   - `scripts/train.py` 的 `build_env_cfg()`：URDF 路径、12 个关节名（如 `FR_hip_joint` … `RL_calf_joint`）、默认关节角、`num_obs` 与 `_compute_observations` 维度一致。  
-   - `configs/env_cfg.py`：默认值与奖励权重。  
+   - **Version 1（当前主路径）：** 改 `train/version1/cfg.py` 与 `desing.md` 对齐；环境逻辑在 `train/version1/env.py` 等。  
+   - **Legacy 基线：** `configs/env_cfg.py` + `envs/`，训练时 `-v legacy`。  
    - 地面 URDF：将 `terrain_urdf_path` 指到可访问的 `plane.urdf`，或从仓库根目录运行并沿用父路径。
 
 3. **可选：仅验证物理**  
@@ -94,11 +96,11 @@ taili/
 
 4. **启动训练**  
    ```bash
-   cd /path/to/genesis-world/taili
-   uv run python scripts/train.py -e taili-locomotion -B 4096 --max_iterations 1000
+   cd /path/to/genesis-world
+   uv run python taili/scripts/train.py -v version1 -e taili-v1-flat -B 4096 --max_iterations 1000
    ```  
-   常用参数：`-B` 并行环境数、`--seed`、`--show_viewer`（调试时打开 Viewer，正式训练一般关闭）。  
-   每次运行会在 `logs/taili-locomotion/<时间戳>/` 下新建独立目录，**不会覆盖** 历史 run。
+   常用参数：`-v` 策略版本、`-B` 并行环境数、`--seed`、`--show_viewer`（调试时打开 Viewer）。  
+   每次运行会在 `logs/<exp_name>/<时间戳>/` 下新建独立目录，**不会覆盖** 历史 run。详见 [`train/README.md`](train/README.md)。
 
 5. **训练循环**  
    `GenesisEnv.step()`：动作裁剪 → PD 目标位置 → `scene.step()` → 终止判断 → 奖励 → 子环境重置 → 观测。  

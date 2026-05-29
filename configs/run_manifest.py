@@ -177,10 +177,12 @@ def _to_jsonable(obj: Any) -> Any:
 
 
 def _observation_dim(env_cfg: Any) -> int:
-    """观测维度（与 envs/observations.observation_dim 一致）。"""
+    """观测维度；版本化配置优先使用 env_cfg.num_obs。"""
+    if hasattr(env_cfg, "num_obs"):
+        return int(env_cfg.num_obs)
     obs = env_cfg.obs
     n = env_cfg.num_actions
-    nc = env_cfg.command.num_commands
+    nc = getattr(env_cfg.command, "num_commands", 3)
     dim = 0
     if obs.include_lin_vel:
         dim += 3
@@ -196,13 +198,18 @@ def _observation_dim(env_cfg: Any) -> int:
         dim += n
     if obs.include_commands:
         dim += nc
+    if getattr(obs, "include_mob_commands", False):
+        dim += getattr(env_cfg.command, "num_mob_commands", 3)
     return dim
 
 
 def _max_episode_length(env_cfg: Any) -> int:
+    if hasattr(env_cfg, "max_episode_length"):
+        return int(env_cfg.max_episode_length)
     import math
 
-    return math.ceil(env_cfg.sim.episode_length_s / env_cfg.sim.sim_dt)
+    dt = getattr(env_cfg, "control_dt", None) or env_cfg.sim.sim_dt
+    return math.ceil(env_cfg.sim.episode_length_s / dt)
 
 
 def _observation_component_names(env_cfg: Any) -> list[str]:
@@ -270,12 +277,16 @@ def build_run_metadata(
             "terrain_urdf": resolved_terrain,
         },
         "derived": {
+            "train_version": getattr(env_cfg, "train_version", "legacy"),
+            "train_version_label": getattr(env_cfg, "train_version_label", ""),
             "num_envs": env_cfg.sim.num_envs,
             "num_actions": env_cfg.num_actions,
             "num_obs": _observation_dim(env_cfg),
+            "num_critic_obs": getattr(env_cfg, "num_critic_obs", _observation_dim(env_cfg)),
             "max_episode_length": _max_episode_length(env_cfg),
+            "control_dt": getattr(env_cfg, "control_dt", env_cfg.sim.sim_dt),
             "obs_components": obs_components,
-            "reward_terms": list(env_cfg.reward.reward_weights.keys()),
+            "reward_terms": list(env_cfg.reward.reward_weights.keys()) or ["v1_multiplicative"],
             "seed": env_cfg.sim.seed,
         },
     }
